@@ -100,21 +100,27 @@ unsigned int factorial(unsigned int n)
 }
 
 double functions(funcy f) {
-	if (f.function == 0) { return sin((f.value * M_PI) / 180); }
-	if (f.function == 1) { return cos((f.value * M_PI) / 180); }
-	if (f.function == 2) { return tan((f.value * M_PI) / 180); }
-	if (f.function == 3) { return 1 / cos((f.value * M_PI) / 180); }
-	if (f.function == 4) { return 1 / tan((f.value * M_PI) / 180); }
-	if (f.function == 5) { return log10(f.value); }
-	if (f.function == 6) { return log(f.value); }
-	if (f.function == 7) { return 1 / sin((f.value * M_PI) / 180); }
-	if (f.function == 8) { return pow(10, f.value); }
-	if (f.function == 9) { return exp(f.value); }
-	if (f.function == 10) { return (asin(f.value) * 180) / M_PI; }
-	if (f.function == 11) { return (acos(f.value) * 180) / M_PI; }
-	if (f.function == 12) { return (atan(f.value) * 180) / M_PI; }
-	if (f.function == 13) { return abs(f.value); }
-	if (f.function == 14) { return factorial(f.value); }
+
+
+	switch(f.function) 
+	{
+		case 0 : return sin((f.value * M_PI) / 180);
+		case 1 : return cos((f.value * M_PI) / 180);
+		case 2 : return tan((f.value * M_PI) / 180);
+		case 3 : return 1 / cos((f.value * M_PI) / 180);
+		case 4 : return 1 / tan((f.value * M_PI) / 180);
+		case 5 : return log10(f.value);
+		case 6 : return log(f.value);
+		case 7 : return 1 / sin((f.value * M_PI) / 180);
+		case 8 : return pow(10, f.value);
+		case 9 : return exp(f.value);
+		case 10: return (asin(f.value) * 180) / M_PI;
+		case 11: return (acos(f.value) * 180) / M_PI;
+		case 12: return (atan(f.value) * 180) / M_PI;
+		case 13: return abs(f.value);
+		case 14: return factorial(f.value);
+		default: return 0000000; 
+	}
 }
 
 double getNum(std::string Mprob, std::string& Mptr) {
@@ -326,36 +332,44 @@ std::string rearranger(std::string Mprob) {
 }
 
 int main()
-{/*
-	std::cout << "ENTER : ";
-	std::string problem;
-	std::getline(std::cin, problem);
-	bool paraOPS;
-	paraOPS = containOperator(problem);
+{
+	while(true)
+	{
+		std::cout << "ENTER : ";
+		std::string problem;
+		std::getline(std::cin, problem);
+		bool paraOPS;
+		paraOPS = containOperator(problem);
 
-	if (paraOPS) {
-		std::vector<double> numarray = getNums(problem);
-		std::vector<char> oparray = getOPS(problem);
+		if (paraOPS) {
+			std::vector<double> numarray = getNums(problem);
+			std::vector<char> oparray = getOPS(problem);
 
-		arithmetics(numarray, oparray);
-		for (double i : numarray) { std::cout << "        " << i; }
-			std::string funcs[16] = { "sin", "cos", "tan", "sec", "cot", "log", "ln",
-							"cosec", "antilog", "ln-1", "sin-1", "cos-1", "tan-1",
-						"mod", "fact", "nullfn" };
-	}*/
+			arithmetics(numarray, oparray);
+			for (double i : numarray) { std::cout << "        " << i << std::endl; }
+				std::string funcs[16] = { "sin", "cos", "tan", "sec", "cot", "log", "ln",
+								"cosec", "antilog", "ln-1", "sin-1", "cos-1", "tan-1",
+							"mod", "fact", "nullfn" };
+		}
 
-	std::string problem;
-	problem = "sin-1 0.5 * |-5|";
-	problem = rearranger(problem);
-	bool paraOPS = containOperator(problem);
-
-	if (paraOPS) {
-		std::vector<double> numarray = getNums(problem);
-		std::vector<char> oparray = getOPS(problem);
-
-		arithmetics(numarray, oparray);
-		for (double i : numarray) { std::cout << "        " << i; }
+		if (problem == "Exit") 
+		{
+			return 0;
+		}
 	}
+
+	// std::string problem;
+	// problem = "sin-1 0.5 * |-5|";
+	// problem = rearranger(problem);
+	// bool paraOPS = containOperator(problem);
+
+	// if (paraOPS) {
+	// 	std::vector<double> numarray = getNums(problem);
+	// 	std::vector<char> oparray = getOPS(problem);
+
+	// 	arithmetics(numarray, oparray);
+	// 	for (double i : numarray) { std::cout << "        " << i; }
+	// }
 
 }
 
