@@ -120,6 +120,7 @@ double functions(funcy f) {
 		case 13: return abs(f.value);
 		case 14: return factorial(f.value);
 		default: return 0000000; 
+
 	}
 }
 
