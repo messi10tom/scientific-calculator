@@ -119,6 +119,8 @@ double functions(funcy f) {
 		case 12: return (atan(f.value) * 180) / M_PI;
 		case 13: return abs(f.value);
 		case 14: return factorial(f.value);
+		default: return 0000000; 
+
 	}
 }
 
@@ -331,36 +333,44 @@ std::string rearranger(std::string Mprob) {
 }
 
 int main()
-{/*
-	std::cout << "ENTER : ";
-	std::string problem;
-	std::getline(std::cin, problem);
-	bool paraOPS;
-	paraOPS = containOperator(problem);
+{
+	while(true)
+	{
+		std::cout << "ENTER : ";
+		std::string problem;
+		std::getline(std::cin, problem);
+		bool paraOPS;
+		paraOPS = containOperator(problem);
 
-	if (paraOPS) {
-		std::vector<double> numarray = getNums(problem);
-		std::vector<char> oparray = getOPS(problem);
+		if (paraOPS) {
+			std::vector<double> numarray = getNums(problem);
+			std::vector<char> oparray = getOPS(problem);
 
-		arithmetics(numarray, oparray);
-		for (double i : numarray) { std::cout << "        " << i; }
-			std::string funcs[16] = { "sin", "cos", "tan", "sec", "cot", "log", "ln",
-							"cosec", "antilog", "ln-1", "sin-1", "cos-1", "tan-1",
-						"mod", "fact", "nullfn" };
-	}*/
+			arithmetics(numarray, oparray);
+			for (double i : numarray) { std::cout << "        " << i << std::endl; }
+				std::string funcs[16] = { "sin", "cos", "tan", "sec", "cot", "log", "ln",
+								"cosec", "antilog", "ln-1", "sin-1", "cos-1", "tan-1",
+							"mod", "fact", "nullfn" };
+		}
 
-	std::string problem;
-	problem = "sin-1 0.5 * |-5|";
-	problem = rearranger(problem);
-	bool paraOPS = containOperator(problem);
-
-	if (paraOPS) {
-		std::vector<double> numarray = getNums(problem);
-		std::vector<char> oparray = getOPS(problem);
-
-		arithmetics(numarray, oparray);
-		for (double i : numarray) { std::cout << "        " << i; }
+		if (problem == "Exit") 
+		{
+			return 0;
+		}
 	}
+
+	// std::string problem;
+	// problem = "sin-1 0.5 * |-5|";
+	// problem = rearranger(problem);
+	// bool paraOPS = containOperator(problem);
+
+	// if (paraOPS) {
+	// 	std::vector<double> numarray = getNums(problem);
+	// 	std::vector<char> oparray = getOPS(problem);
+
+	// 	arithmetics(numarray, oparray);
+	// 	for (double i : numarray) { std::cout << "        " << i; }
+	// }
 
 }
 
