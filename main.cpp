@@ -100,21 +100,26 @@ unsigned int factorial(unsigned int n)
 }
 
 double functions(funcy f) {
-	if (f.function == 0) { return sin((f.value * M_PI) / 180); }
-	if (f.function == 1) { return cos((f.value * M_PI) / 180); }
-	if (f.function == 2) { return tan((f.value * M_PI) / 180); }
-	if (f.function == 3) { return 1 / cos((f.value * M_PI) / 180); }
-	if (f.function == 4) { return 1 / tan((f.value * M_PI) / 180); }
-	if (f.function == 5) { return log10(f.value); }
-	if (f.function == 6) { return log(f.value); }
-	if (f.function == 7) { return 1 / sin((f.value * M_PI) / 180); }
-	if (f.function == 8) { return pow(10, f.value); }
-	if (f.function == 9) { return exp(f.value); }
-	if (f.function == 10) { return (asin(f.value) * 180) / M_PI; }
-	if (f.function == 11) { return (acos(f.value) * 180) / M_PI; }
-	if (f.function == 12) { return (atan(f.value) * 180) / M_PI; }
-	if (f.function == 13) { return abs(f.value); }
-	if (f.function == 14) { return factorial(f.value); }
+
+
+	switch(f.function) 
+	{
+		case 0 : return sin((f.value * M_PI) / 180);
+		case 1 : return cos((f.value * M_PI) / 180);
+		case 2 : return tan((f.value * M_PI) / 180);
+		case 3 : return 1 / cos((f.value * M_PI) / 180);
+		case 4 : return 1 / tan((f.value * M_PI) / 180);
+		case 5 : return log10(f.value);
+		case 6 : return log(f.value);
+		case 7 : return 1 / sin((f.value * M_PI) / 180);
+		case 8 : return pow(10, f.value);
+		case 9 : return exp(f.value);
+		case 10: return (asin(f.value) * 180) / M_PI;
+		case 11: return (acos(f.value) * 180) / M_PI;)
+		case 12: return (atan(f.value) * 180) / M_PI;
+		case 13: return abs(f.value);
+		case 14: return factorial(f.value);
+	}
 }
 
 double getNum(std::string Mprob, std::string& Mptr) {
