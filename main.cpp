@@ -337,9 +337,8 @@ int main()
 		std::cout << "ENTER : ";
 		std::string problem;
 		std::getline(std::cin, problem);
-		bool paraOPS;
-		paraOPS = containOperator(problem);
-
+		
+		problem = rearranger(problem);
 		if (paraOPS) {
 			std::vector<double> numarray = getNums(problem);
 			std::vector<char> oparray = getOPS(problem);
