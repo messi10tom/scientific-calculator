@@ -346,18 +346,18 @@ int main()
 		std::getline(std::cin, problem);
 		
 		problem = rearranger(problem);
-		if (paraOPS) {
+		if (!is_number(problem)) {
 			std::vector<double> numarray = getNums(problem);
 			std::vector<char> oparray = getOPS(problem);
 
 			arithmetics(numarray, oparray);
 			for (double i : numarray) { std::cout << "        " << i << std::endl; }
 		}
-
-		if (problem == "Exit") 
+		else if (problem == "Exit") 
 		{
 			return 0;
 		}
+		else std::cout << "        " << problem;
 	}
 
 	// std::string problem;
