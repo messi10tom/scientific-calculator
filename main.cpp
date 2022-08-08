@@ -146,7 +146,13 @@ std::vector<double> getNums(std::string Mprob) {
 
 	}
 	//std::cout << Mprob << "M" << '\n';
-	nums.push_back(stoi(Mprob));
+	funcy func = isFunc(Mprob);
+	if (func.isfunc) {
+		nums.push_back(functions(func));
+	}
+	else {
+		nums.push_back(stoi(Mprob));
+	}
 	//for (double nu : nums) { std::cout << nu<< "N" <<'\n'; }
 	return nums;
 
