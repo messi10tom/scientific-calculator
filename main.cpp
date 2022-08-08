@@ -258,10 +258,16 @@ std::string rearranger(std::string Mprob) {
 	// removing all whitespaces
 	std::string::iterator end_pos = std::remove(Mprob.begin(), Mprob.end(), ' ');
 	Mprob.erase(end_pos, Mprob.end());
+
+	// if its just a function that contain no operations
+	funcy func = isFunc(Mprob);
+	if (func.isfunc) {
+		return std::to_string(functions(func));
+	}
 	//placing + infront of - if infront of - is not an operator
 	size_t start_pos = 0;
-	std::vector<std::string> expfuncs = {"sin-1", "cos-1", "tan-1"};
-	while ((start_pos = Mprob.find('-', start_pos)) != std::string::npos ) {
+	std::vector<std::string> expfuncs = { "sin-1", "cos-1", "tan-1" };
+	while ((start_pos = Mprob.find('-', start_pos)) != std::string::npos) {
 		//sin-1 0.5 * |-5|
 		if (start_pos != 0) {
 			if (Mprob[start_pos - 1] != '+' && Mprob[start_pos - 1] != '*' &&
@@ -283,7 +289,7 @@ std::string rearranger(std::string Mprob) {
 		start_pos += 2;
 
 	}
-	
+
 	start_pos = 0;
 	while ((start_pos = Mprob.find("|", start_pos)) != std::string::npos) {
 		size_t end_pos;
