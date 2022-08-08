@@ -39,13 +39,10 @@ funcy isFunc(std::string function) {
 	//must contain any keyword from [funcs]
 	//should have any real number in it
 	//dont contain any other characters except '(', ')' and ' ' currently
-	//                        0      1		2	   3	  4		 5		6
-	std::string funcs[16] = { "sin", "cos", "tan", "sec", "cot", "log", "ln",
-		//						7		8			9		10		11		12
-							"cosec", "antilog", "ln-1", "sin-1", "cos-1", "tan-1",
-		// spl fns        13      14      15      
-						"mod", "fact", "nullfn" };
-	int func = 15, pos;
+	std::string funcs[16] = { "sin", "cos", "tan", "sec", "cot", 
+				 "log", "ln", "cosec", "antilog", "ln-1", 
+				 "sin-1", "cos-1", "tan-1", "fact", "nullfn" };
+	int func = 14, pos;
 	std::string expfunc;
 	funcy FUNCY;
 	double value;
@@ -54,18 +51,11 @@ funcy isFunc(std::string function) {
 			func = i;
 		}
 	}
-	if (func != 15) {
+	if (func != 14) {
 		if ((pos = function.find('(')) != std::string::npos) {
 			value = stoi(function.substr(pos + 1, function.find(')') - pos - 1));
 			expfunc = funcs[func] + "(" + std::to_string(value) + ")";
 		}
-		
-		else if ((pos = function.find(' ')) != std::string::npos) {
-			std::cout << function;
-			value = stoi(function.substr(pos, function.length()));
-			expfunc = funcs[func] + " " + std::to_string(value);
-		}
-
 		else {
 			value = std::stod(function.substr(funcs[func].length(), function.length()));
 			expfunc = funcs[func] + std::to_string(value);
@@ -73,16 +63,12 @@ funcy isFunc(std::string function) {
 	}
 
 	//spl fns
-	if ((pos = function.find('|')) != std::string::npos) {
-		value = stoi(function.substr(1, function.length() - 2));
-		expfunc = "|" + std::to_string(value) + "|";
-	}
 	if ((pos = function.find('!')) != std::string::npos) {
 		value = stoi(function.substr(0, function.length() - 1));
 		expfunc = std::to_string(value) + "!";
 	}
 
-	if (func != 15) {
+	if (func != 14) {
 		FUNCY.value = value;
 		FUNCY.function = func;
 		FUNCY.Mprob = function;
@@ -117,8 +103,7 @@ double functions(funcy f) {
 		case 10: return (asin(f.value) * 180) / M_PI;
 		case 11: return (acos(f.value) * 180) / M_PI;
 		case 12: return (atan(f.value) * 180) / M_PI;
-		case 13: return abs(f.value);
-		case 14: return factorial(f.value);
+		case 13: return factorial(f.value);
 		default: return 0000000; 
 
 	}
@@ -288,6 +273,9 @@ std::string rearranger(std::string Mprob) {
 						Mprob.replace(start_pos, 1, "+-");
 					}
 				}
+				else {
+					Mprob.replace(start_pos, 1, "+-");
+				}
 
 			}
 		}
@@ -300,13 +288,17 @@ std::string rearranger(std::string Mprob) {
 	while ((start_pos = Mprob.find("|", start_pos)) != std::string::npos) {
 		size_t end_pos;
 		end_pos = Mprob.find("|", start_pos + 1);
-		std::string x = rearranger(Mprob.substr(start_pos + 2, end_pos - start_pos - 2));
-		std::vector<double> numarray = getNums(x);
-		std::vector<char> oparray = getOPS(x);
+		if (end_pos - start_pos > 2) {
+			std::string x = rearranger(Mprob.substr(start_pos + 2, end_pos - start_pos - 2));
+			std::vector<double> numarray = getNums(x);
+			std::vector<char> oparray = getOPS(x);
+			Mprob = Mprob.substr(0, start_pos) + std::to_string(abs(numarray[0])) + Mprob.substr(end_pos + 1, Mprob.length());
+		}
+		else {
+			Mprob.erase(Mprob.begin() + end_pos);
+			Mprob.erase(Mprob.begin() + start_pos);
+		}
 
-		//std::cout << Mprob.substr(0, start_pos);
-		Mprob = Mprob.substr(0, start_pos + 1) + std::to_string(numarray[0]) + Mprob.substr(end_pos, Mprob.length());
-		std::cout << Mprob;
 	}
 
 	while ((start_pos = Mprob.find("ln+-1")) != std::string::npos) {
@@ -348,9 +340,6 @@ int main()
 
 			arithmetics(numarray, oparray);
 			for (double i : numarray) { std::cout << "        " << i << std::endl; }
-				std::string funcs[16] = { "sin", "cos", "tan", "sec", "cot", "log", "ln",
-								"cosec", "antilog", "ln-1", "sin-1", "cos-1", "tan-1",
-							"mod", "fact", "nullfn" };
 		}
 
 		if (problem == "Exit") 
