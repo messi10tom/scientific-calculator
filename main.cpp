@@ -39,7 +39,7 @@ funcy isFunc(std::string function) {
 	//must contain any keyword from [funcs]
 	//should have any real number in it
 	//dont contain any other characters except '(', ')' and ' ' currently
-	std::string funcs[16] = { "sin", "cos", "tan", "sec", "cot", 
+	std::string funcs[15] = { "sin", "cos", "tan", "sec", "cot", 
 				 "log", "ln", "cosec", "antilog", "ln-1", 
 				 "sin-1", "cos-1", "tan-1", "fact", "nullfn" };
 	int func = 14, pos;
