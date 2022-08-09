@@ -38,14 +38,17 @@ bool containOperator(std::string Mprob, char SOP = 'a') {
 funcy isFunc(std::string function) {
 	//must contain any keyword from [funcs]
 	//should have any real number in it
-	//dont contain any other characters except '(', ')' and ' ' currently
-	std::string funcs[15] = { "sin", "cos", "tan", "sec", "cot", 
-				 "log", "ln", "cosec", "antilog", "ln-1", 
-				 "sin-1", "cos-1", "tan-1", "fact", "nullfn" };
+	// 
+	//                        0      1		2	   3	  4		 5		6
+	std::string funcs[15] = { "sin", "cos", "tan", "sec", "cot", "log", "ln",
+		//						7		8			9		10		11		12
+							"cosec", "antilog", "ln-1", "sin-1", "cos-1", "tan-1",
+		//						13     14
+							"fact", "nullfn" };
 	int func = 14, pos;
 	std::string expfunc;
 	funcy FUNCY;
-	double value;
+	std::string value;
 	for (int i = 0; i < 13; i++) {
 		if (function.find(funcs[i]) != std::string::npos) {
 			func = i;
@@ -53,27 +56,40 @@ funcy isFunc(std::string function) {
 	}
 	if (func != 14) {
 		if ((pos = function.find('(')) != std::string::npos) {
-			value = stoi(function.substr(pos + 1, function.find(')') - pos - 1));
-			expfunc = funcs[func] + "(" + std::to_string(value) + ")";
+
+			value = function.substr(pos + 1, function.find(')') - pos - 1);
+			if (!(std::all_of(value.begin(), value.end(), ::isdigit))) {
+				func = 14;
+			}
+			expfunc = funcs[func] + "(" + value + ")";
 		}
+
 		else {
-			value = std::stod(function.substr(funcs[func].length(), function.length()));
-			expfunc = funcs[func] + std::to_string(value);
+			value = function.substr(funcs[func].length(), function.length());
+			if (!(std::all_of(value.begin(), value.end(), ::isdigit))) {
+				func = 14;
+			}
+			expfunc = funcs[func] + value;
 		}
 	}
 
 	//spl fns
+
 	if ((pos = function.find('!')) != std::string::npos) {
-		value = stoi(function.substr(0, function.length() - 1));
-		expfunc = std::to_string(value) + "!";
+		value = function.substr(0, function.length() - 1);
+		if (!(std::all_of(value.begin(), value.end(), ::isdigit))) {
+			func = 14;
+		}
+		expfunc = value + "!";
 	}
 
 	if (func != 14) {
-		FUNCY.value = value;
+		if (std::trunc(std::stod(value)) == std::stod(value))  FUNCY.value = stoi(value);
+		else FUNCY.value = stod(value);
 		FUNCY.function = func;
 		FUNCY.Mprob = function;
-		pos = function.find(expfunc);
 		if (function.length() == expfunc.length()) { FUNCY.isfunc = true; }
+		else FUNCY.isfunc = false;
 		return FUNCY;
 	}
 	FUNCY.isfunc = false;
