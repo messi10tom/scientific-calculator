@@ -58,7 +58,7 @@ funcy isFunc(std::string function) {
 		if ((pos = function.find('(')) != std::string::npos) {
 
 			value = function.substr(pos + 1, function.find(')') - pos - 1);
-			if (!(value.find_first_not_of("0123456789") == std::string::npos)) {
+			if (!(std::all_of(value.begin(), value.end(), ::isdigit))) {
 				func = 14;
 			}
 			expfunc = funcs[func] + "(" + value + ")";
@@ -66,7 +66,7 @@ funcy isFunc(std::string function) {
 
 		else {
 			value = function.substr(funcs[func].length(), function.length());
-			if (!(value.find_first_not_of("0123456789.") == std::string::npos)) {
+			if (!(std::all_of(value.begin(), value.end(), ::isdigit))) {
 				func = 14;
 			}
 			expfunc = funcs[func] + value;
@@ -77,7 +77,7 @@ funcy isFunc(std::string function) {
 
 	if ((pos = function.find('!')) != std::string::npos) {
 		value = function.substr(0, function.length() - 1);
-		if (!(value.find_first_not_of("0123456789") == std::string::npos)) {
+		if (!(std::all_of(value.begin(), value.end(), ::isdigit))) {
 			func = 14;
 		}
 		expfunc = value + "!";
@@ -379,7 +379,7 @@ int main()
 		{
 			return 0;
 		}
-		else std::cout << "        " << problem;
+		else std::cout << "        " << problem << std::endl;
 	}
 
 	// std::string problem;
@@ -396,5 +396,4 @@ int main()
 	// }
 
 }
-
 
