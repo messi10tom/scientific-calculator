@@ -286,7 +286,7 @@ std::string rearranger(std::string Mprob) {
 	if (func.isfunc) {
 		return std::to_string(functions(func));
 	}
-	//placing + infront of - if infront of - is not an operator
+	//changing - into +-1*
 	size_t start_pos = 0;
 	std::vector<std::string> expfuncs = { "sin-1", "cos-1", "tan-1" };
 	while ((start_pos = Mprob.find('-', start_pos)) != std::string::npos) {
@@ -298,11 +298,11 @@ std::string rearranger(std::string Mprob) {
 
 				if (start_pos >= 3) {
 					if ((std::find(expfuncs.begin(), expfuncs.end(), Mprob.substr(start_pos - 3, 5)) == expfuncs.end())) {
-						Mprob.replace(start_pos, 1, "+-");
+						Mprob.replace(start_pos, 1, "+-1*");
 					}
 				}
 				else {
-					Mprob.replace(start_pos, 1, "+-");
+					Mprob.replace(start_pos, 1, "+-1*");
 				}
 
 			}
@@ -332,7 +332,6 @@ std::string rearranger(std::string Mprob) {
 	while ((start_pos = Mprob.find("ln+-1")) != std::string::npos) {
 		Mprob.erase(Mprob.begin() + start_pos + 3);
 	}
-	if (Mprob[0] == '+') { Mprob = Mprob.substr(1, Mprob.length()); }
 
 	// finding first ) and then closest ( in the left side.
 
