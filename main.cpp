@@ -1,262 +1,236 @@
 #define _USE_MATH_DEFINES
-
 #include <string>
 #include <vector>
 #include <algorithm>
 #include <math.h>
 #include <iostream>
-int j = 0;
-struct funcy
-{
-	std::string Mprob;
-	int function;
-	double value;
-	bool isfunc;
+
+class Metrics {
+	public:
+		std::string mathsproblem;
+		std::string function = "NULLFn";
+		std::string value;
+		std::vector<double> nVEC;
+	private:
+
+		Metrics(std::string& mp) {
+			mathsproblem = mp;
+		}
+		//                      0      1	  2	     3	    4	   5	  6
+		std::string funcs[15] = { "sin", "cos", "tan", "sec", "cot", "log", "ln",
+			//					   7		 8		   9	  10	   11		12
+								"cosec", "antilog", "ln-1", "sin-1", "cos-1", "tan-1",
+			//					13      14
+								"!", "NULLFn" };
+		int start_pos;
+		int NULLFn = 14;
+
+		bool containOperator(const char& SOP = 'a') {
+			if (SOP == 'a') {
+				for (char i : {'+', '-', '*', '/', '^'}) {
+					return mathsproblem.find(i) != std::string::npos;
+				}
+			}
+			else {
+				return mathsproblem.find(SOP) != std::string::npos;
+			}
+		}
+
+		void functionFinder() {
+			int func = 14;
+			for (int i = 0; i < NULLFn; i++) {
+				if (mathsproblem.find(funcs[i]) != std::string::npos) func = i;
+
+			}
+			function = funcs[func];
+		}
+
+		void functionValueSplitter() {
+			int pos;
+			if (NULLFn != 14) {
+				if ((pos = mathsproblem.find('(')) != std::string::npos) {
+					value = mathsproblem.substr(pos + 1, mathsproblem.find(')') - pos - 1);
+				}
+
+				else {
+					value = mathsproblem.substr(function.length(), mathsproblem.length());
+				}
+			}
+
+			if ((pos = function.find('!')) != std::string::npos) {
+				value = function.substr(0, function.length() - 1);
+			}
+		}
+
+		bool isFunction() {
+			// A function needs its name or symbol in it
+			// A function must have a value
+			// Eg. sin40, cos(90), log 2
+			if (!(value.find_first_not_of("0123456789.") == std::string::npos) &&
+				function == "NULLFn") {
+				return false;
+			}
+			return true;
+		}
+
+		double functions(const int function, double value, ) {
+
+
+			switch (function)
+			{
+			case 0: return sin((value * M_PI) / 180);
+			case 1: return cos((value * M_PI) / 180);
+			case 2: return tan((value * M_PI) / 180);
+			case 3: return 1 / cos((value * M_PI) / 180);
+			case 4: return 1 / tan((value * M_PI) / 180);
+			case 5: return log10(value);
+			case 6: return log(value);
+			case 7: return 1 / sin((value * M_PI) / 180);
+			case 8: return pow(10, value);
+			case 9: return exp(value);
+			case 10: return (asin(value) * 180) / M_PI;
+			case 11: return (acos(value) * 180) / M_PI;
+			case 12: return (atan(value) * 180) / M_PI;
+			case 13: return factorial(value);
+
+			}
+		}
+
+		void numSplitter() {
+			double n;
+			Metrics MathProb = mathsproblem;
+			while (MathProb.containOperator()) {
+				while ((start_pos = MathProb.mathsproblem.find('+', start_pos)) != std::string::npos ||
+					(start_pos = MathProb.mathsproblem.find('*', start_pos)) != std::string::npos ||
+					(start_pos = MathProb.mathsproblem.find('/', start_pos)) != std::string::npos ||
+					(start_pos = MathProb.mathsproblem.find('^', start_pos)) != std::string::npos || ) {
+					Metrics MATHSPROBLEM = MathProb.mathsproblem.substr(0, start_pos);
+					if (MATHSPROBLEM.isFunction()) {
+						MATHSPROBLEM.functionFinder();
+						MATHSPROBLEM.functionValueSplitter();
+						if (std::trunc(std::stod(MATHSPROBLEM.value)) == std::stod(MATHSPROBLEM.value))
+							n = MATHSPROBLEM.functions(std::find(funcs, funcs + 15, function) - funcs, stoi(MATHSPROBLEM.value));
+						else
+							n = MATHSPROBLEM.functions(std::find(funcs, funcs + 15, function) - funcs, stod(MATHSPROBLEM.value));
+					}
+					else {
+						n = stod(MathProb.mathsproblem.substr(0, start_pos));
+					}
+					mathsproblem = MathProb.mathsproblem.substr(start_pos + 1);
+
+				}
+				Metrics::nVEC.push_back(n);
+
+			}
+
+			if (MathProb.isFunction()) {
+				MathProb.functionFinder();
+				MathProb.functionValueSplitter();
+				if (std::trunc(std::stod(MathProb.value)) == std::stod(MathProb.value))
+					n = MathProb.functions(std::find(funcs, funcs + 15, function) - funcs, stoi(MathProb.value));
+				else
+					n = MathProb.functions(std::find(funcs, funcs + 15, function) - funcs, stod(MathProb.value));
+				Metrics::nVEC.push_back(n);
+			}
+			else {
+				Metrics::nVEC.push_back(stod(MathProb.mathsproblem))
+			}
+
+		}
+
+		void reduction() {
+			// removing all whitespaces
+			std::string::iterator end_pos;
+			end_pos = std::remove(mathsproblem.begin(), mathsproblem.end(), ' ');
+			mathsproblem.erase(end_pos, mathsproblem.end());
+		}
+
+		void parenModCalc() {
+			size_t end_pos, j;
+			while ((start_pos = mathsproblem.find("|", start_pos)) != std::string::npos &&
+				   (start_pos = mathsproblem.find(')')) != std::string::npos) {
+				if (mathsproblem[start_pos] == '|') {
+					end_pos = mathsproblem.find("|", start_pos + 1);
+					if (end_pos - start_pos > 2) {
+						Metrics::rearranger(mathsproblem.substr(start_pos + 2, end_pos - start_pos - 2));
+						std::vector<double> numarray = getNums(mathsproblem);
+						std::vector<char> oparray = getOPS(mathsproblem);
+						mathsproblem = mathsproblem.substr(0, start_pos) +
+							std::to_string(abs(numarray[0])) +
+							mathsproblem.substr(end_pos + 1, mathsproblem.length());
+					}
+					else {
+						mathsproblem.erase(mathsproblem.begin() + end_pos);
+						mathsproblem.erase(mathsproblem.begin() + start_pos);
+					}
+				}
+				else {
+					auto substr = mathsproblem.substr(0, start_pos);
+					std::reverse(substr.begin(), substr.end());
+					j = substr.find('(');
+					auto numarray = getNums(mathsproblem.substr(start_pos - j, j));
+					auto oparray = getOPS(mathsproblem.substr(start_pos - j, j));
+					arithmetics(numarray, oparray);
+					mathsproblem = mathsproblem.substr(0, start_pos - j - 1) + 
+								   std::to_string(numarray[0]) + 
+								   mathsproblem.substr(start_pos + 1, mathsproblem.length());
+				}
+
+			}
+		}
+
+		void MIN2MINX() {
+			//changing - into +-1*
+			std::vector<std::string> expfuncs = { "sin-1", "cos-1", "tan-1" };
+			while ((start_pos = mathsproblem.find('-', start_pos)) != std::string::npos) {
+				// not letting it to replace - if - is on the first number's sign
+				// Eg. -1 + 1
+				if (start_pos != 0) {
+					// avoiding cases where - is the sign of number
+					// Eg. 5 * -1
+					if (mathsproblem[start_pos - 1] != '+' && mathsproblem[start_pos - 1] != '*' &&
+						mathsproblem[start_pos - 1] != '/' && mathsproblem[start_pos - 1] != '^') {
+						
+						// most of the functions which has - in it[indicates inverse(sin-1)] have
+						// lenght greater than 3.
+						if (start_pos >= 3) {
+							if ((std::find(expfuncs.begin(), expfuncs.end(), 
+								mathsproblem.substr(start_pos - 3, 5)) == expfuncs.end())) {
+								mathsproblem.replace(start_pos, 1, "+-1*");
+							}
+						}
+						// when - is located at an index less than 3, mostly normal numbers not fns
+						else {
+							mathsproblem.replace(start_pos, 1, "+-1*");
+						}
+
+					}
+				}
+
+				start_pos += 2;
+
+			}
+
+			while ((start_pos = mathsproblem.find("ln+-1")) != std::string::npos) {
+				mathsproblem.erase(mathsproblem.begin() + start_pos + 3);
+			}
+		}
+
+		void rearranger() {
+
+		}
+
 };
-std::string vecTstr(std::vector<char>& str) {
-	std::string i(str.begin(), str.end());
-	return i;
-}
-
-bool containOperator(std::string Mprob, char SOP = 'a') {
-	for (int i = 0; i < Mprob.length(); i++) {
-		if (SOP == 'a') {
-			if (Mprob[i] == '+' || Mprob[i] == '*' ||
-				Mprob[i] == '/' || Mprob[i] == '^') {
-				return true;
-			}
-		}
-		else {
-			if (Mprob[i] == SOP) {
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
-funcy isFunc(std::string function) {
-	//must contain any keyword from [funcs]
-	//should have any real number in it
-	// 
-	//                        0      1		2	   3	  4		 5		6
-	std::string funcs[15] = { "sin", "cos", "tan", "sec", "cot", "log", "ln",
-		//						7		8			9		10		11		12
-							"cosec", "antilog", "ln-1", "sin-1", "cos-1", "tan-1",
-		//						13     14
-							"fact", "nullfn" };
-	int func = 14, pos;
-	std::string expfunc;
-	funcy FUNCY;
-	std::string value;
-	for (int i = 0; i < 13; i++) {
-		if (function.find(funcs[i]) != std::string::npos) {
-			func = i;
-		}
-	}
-	if (func != 14) {
-		if ((pos = function.find('(')) != std::string::npos) {
-
-			value = function.substr(pos + 1, function.find(')') - pos - 1);
-			if (!(value.find_first_not_of("0123456789") == std::string::npos)) {
-				func = 14;
-			}
-			expfunc = funcs[func] + "(" + value + ")";
-		}
-
-		else {
-			value = function.substr(funcs[func].length(), function.length());
-			if (!(value.find_first_not_of("0123456789.") == std::string::npos)) {
-				func = 14;
-			}
-			expfunc = funcs[func] + value;
-		}
-	}
-
-	//spl fns
-
-	if ((pos = function.find('!')) != std::string::npos) {
-		value = function.substr(0, function.length() - 1);
-		if (!(value.find_first_not_of("0123456789") == std::string::npos)) {
-			func = 14;
-		}
-		expfunc = value + "!";
-	}
-
-	if (func != 14) {
-		if (std::trunc(std::stod(value)) == std::stod(value))  FUNCY.value = stoi(value);
-		else FUNCY.value = stod(value);
-		FUNCY.function = func;
-		FUNCY.Mprob = function;
-		if (function.length() == expfunc.length()) { FUNCY.isfunc = true; }
-		else FUNCY.isfunc = false;
-		return FUNCY;
-	}
-	FUNCY.isfunc = false;
-	return FUNCY;
-}
 
 unsigned int factorial(unsigned int n)
 {
 	return ((n == 1 || n == 0) ? 1 : n * factorial(n - 1));
 }
 
-double functions(funcy f) {
-
-
-	switch(f.function) 
-	{
-		case 0 : return sin((f.value * M_PI) / 180);
-		case 1 : return cos((f.value * M_PI) / 180);
-		case 2 : return tan((f.value * M_PI) / 180);
-		case 3 : return 1 / cos((f.value * M_PI) / 180);
-		case 4 : return 1 / tan((f.value * M_PI) / 180);
-		case 5 : return log10(f.value);
-		case 6 : return log(f.value);
-		case 7 : return 1 / sin((f.value * M_PI) / 180);
-		case 8 : return pow(10, f.value);
-		case 9 : return exp(f.value);
-		case 10: return (asin(f.value) * 180) / M_PI;
-		case 11: return (acos(f.value) * 180) / M_PI;
-		case 12: return (atan(f.value) * 180) / M_PI;
-		case 13: return factorial(f.value);
-		default: return 0000000; 
-
-	}
-}
-
-double getNum(std::string Mprob, std::string& Mptr) {
-	double n;
-	for (int i = 0; i < Mprob.length(); i++) {
-		if (Mprob[i] == '+' || Mprob[i] == '*' ||
-			Mprob[i] == '/' || Mprob[i] == '^') {
-			//sin(9)-4+56
-			funcy func = isFunc(Mprob.substr(0, i));
-			if (func.isfunc) {
-				n = functions(func);
-			}
-			else {
-				n = stoi(Mprob.substr(0, i));
-			}
-			Mptr = Mprob.substr(i + 1);
-			//std::cout << Mprob << '\n';
-			return n;
-		}
-
-	}
-}
-
-
-std::vector<double> getNums(std::string Mprob) {
-	std::string Mref;
-	std::vector<double> nums;
-	double num;
-	int i = 0;
-
-	while (containOperator(Mprob)) {
-		num = getNum(Mprob, Mref);
-		//std::cout << Mprob << '\n';
-		nums.push_back(num);
-		Mprob = Mref;
-		i++;
-
-	}
-	//std::cout << Mprob << "M" << '\n';
-	funcy func = isFunc(Mprob);
-	if (func.isfunc) {
-		nums.push_back(functions(func));
-	}
-	else {
-		nums.push_back(stoi(Mprob));
-	}
-	//for (double nu : nums) { std::cout << nu<< "N" <<'\n'; }
-	return nums;
-
-}
-
-void arithmetics(std::vector<double>& Nvec, std::vector<char>& OPvec) {
-	int i = 0;
-	std::vector<double>::iterator it1;
-	std::vector<char>::iterator it2;
-
-	while (containOperator(vecTstr(OPvec), '^')) {
-		if (OPvec[i] == '^') {
-			Nvec[i] = pow(Nvec[i], Nvec[i + 1]);
-
-			it1 = Nvec.begin() + i + 1;
-			Nvec.erase(it1);
-
-			it2 = OPvec.begin() + i;
-			OPvec.erase(it2);
-
-			i = -1;
-		}
-
-		i++;
-	}
-
-	i = 0;
-
-	while (containOperator(vecTstr(OPvec), '*')) {
-		if (OPvec[i] == '*') {
-			Nvec[i] = Nvec[i] * Nvec[i + 1];
-
-			it1 = Nvec.begin() + i + 1;
-			Nvec.erase(it1);
-
-			it2 = OPvec.begin() + i;
-			OPvec.erase(it2);
-
-			i = -1;
-		}
-
-		i++;
-	}
-
-	i = 0;
-
-	while (containOperator(vecTstr(OPvec), '/')) {
-		if (OPvec[i] == '/') {
-			Nvec[i] = Nvec[i] / Nvec[i + 1];
-
-			it1 = Nvec.begin() + i + 1;
-			Nvec.erase(it1);
-
-			it2 = OPvec.begin() + i;
-			OPvec.erase(it2);
-
-			i = -1;
-		}
-
-		i++;
-	}
-
-	i = 0;
-
-	while (containOperator(vecTstr(OPvec), '+')) {
-
-		if (OPvec[i] == '+') {
-			Nvec[i] = Nvec[i] + Nvec[i + 1];
-
-			it1 = Nvec.begin() + i + 1;
-			Nvec.erase(it1);
-
-			it2 = OPvec.begin() + i;
-			OPvec.erase(it2);
-
-			i = -1;
-			
-		}
-		
-		i++;
-	}
-
-}
-
 std::vector<char> getOPS(std::string Mprob) {
 	std::vector<char> x;
 	for (int i = 0; i < Mprob.length(); i++) {
-		if (Mprob[i] == '+' || Mprob[i] == '*' || 
+		if (Mprob[i] == '+' || Mprob[i] == '*' ||
 			Mprob[i] == '/' || Mprob[i] == '^') {
 			x.push_back(Mprob[i]);
 		}
@@ -265,107 +239,13 @@ std::vector<char> getOPS(std::string Mprob) {
 	return x;
 }
 
-std::string ReplaceAll(std::string str, const std::string& from, const std::string& to) {
-	size_t start_pos = 0;
-	while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
-		str.replace(start_pos, from.length(), to);
-		start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
-
-	}
-	return str;
-}
-
-
-std::string rearranger(std::string Mprob) {
-	// removing all whitespaces
-	std::string::iterator end_pos = std::remove(Mprob.begin(), Mprob.end(), ' ');
-	Mprob.erase(end_pos, Mprob.end());
-
-	// if its just a function that contain no operations
-	funcy func = isFunc(Mprob);
-	if (func.isfunc) {
-		return std::to_string(functions(func));
-	}
-	//changing - into +-1*
-	size_t start_pos = 0;
-	std::vector<std::string> expfuncs = { "sin-1", "cos-1", "tan-1" };
-	while ((start_pos = Mprob.find('-', start_pos)) != std::string::npos) {
-		//sin-1 0.5 * |-5|
-		if (start_pos != 0) {
-			if (Mprob[start_pos - 1] != '+' && Mprob[start_pos - 1] != '*' &&
-				Mprob[start_pos - 1] != '/' && Mprob[start_pos - 1] != '^') {
-				//std::cout << Mprob.substr(start_pos - 2, 4) << '\n';
-
-				if (start_pos >= 3) {
-					if ((std::find(expfuncs.begin(), expfuncs.end(), Mprob.substr(start_pos - 3, 5)) == expfuncs.end())) {
-						Mprob.replace(start_pos, 1, "+-1*");
-					}
-				}
-				else {
-					Mprob.replace(start_pos, 1, "+-1*");
-				}
-
-			}
-		}
-
-		start_pos += 2;
-
-	}
-
-	start_pos = 0;
-	while ((start_pos = Mprob.find("|", start_pos)) != std::string::npos) {
-		size_t end_pos;
-		end_pos = Mprob.find("|", start_pos + 1);
-		if (end_pos - start_pos > 2) {
-			std::string x = rearranger(Mprob.substr(start_pos + 2, end_pos - start_pos - 2));
-			std::vector<double> numarray = getNums(x);
-			std::vector<char> oparray = getOPS(x);
-			Mprob = Mprob.substr(0, start_pos) + std::to_string(abs(numarray[0])) + Mprob.substr(end_pos + 1, Mprob.length());
-		}
-		else {
-			Mprob.erase(Mprob.begin() + end_pos);
-			Mprob.erase(Mprob.begin() + start_pos);
-		}
-
-	}
-
-	while ((start_pos = Mprob.find("ln+-1")) != std::string::npos) {
-		Mprob.erase(Mprob.begin() + start_pos + 3);
-	}
-
-	// finding first ) and then closest ( in the left side.
-
-	size_t j;
-	start_pos = 0;
-	while ((start_pos = Mprob.find(')')) != std::string::npos) {
-		auto substr = Mprob.substr(0, start_pos);
-		std::reverse(substr.begin(), substr.end());
-		j = substr.find('(');
-		auto numarray = getNums(Mprob.substr(start_pos - j, j));
-		auto oparray = getOPS(Mprob.substr(start_pos - j, j));
-		arithmetics(numarray, oparray);
-		Mprob = Mprob.substr(0, start_pos - j - 1) + std::to_string(numarray[0]) + Mprob.substr(start_pos + 1, Mprob.length());
-	}
-
-
-	return Mprob;
-}
-
-bool is_number(const std::string& s)
-{
-	char* end = nullptr;
-	double val = strtod(s.c_str(), &end);
-	return end != s.c_str() && *end == '\0' && val != HUGE_VAL;
-}
-
-int main()
-{
-	while(true)
+int main() {
+	while (true)
 	{
 		std::cout << "ENTER : ";
 		std::string problem;
 		std::getline(std::cin, problem);
-		
+
 		problem = rearranger(problem);
 		if (!is_number(problem)) {
 			std::vector<double> numarray = getNums(problem);
@@ -374,26 +254,10 @@ int main()
 			arithmetics(numarray, oparray);
 			for (double i : numarray) { std::cout << "        " << i << std::endl; }
 		}
-		else if (problem == "Exit") 
+		else if (problem == "Exit")
 		{
 			return 0;
 		}
-		else std::cout << "        " << problem;
+		else std::cout << "        " << problem << std::endl;
 	}
-
-	// std::string problem;
-	// problem = "sin-1 0.5 * |-5|";
-	// problem = rearranger(problem);
-	// bool paraOPS = containOperator(problem);
-
-	// if (paraOPS) {
-	// 	std::vector<double> numarray = getNums(problem);
-	// 	std::vector<char> oparray = getOPS(problem);
-
-	// 	arithmetics(numarray, oparray);
-	// 	for (double i : numarray) { std::cout << "        " << i; }
-	// }
-
 }
-
-
