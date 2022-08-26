@@ -11,6 +11,7 @@ class Metrics {
 		std::string function = "NULLFn";
 		std::string value;
 		std::vector<double> nVEC;
+		std::vector<char> opsVEC;
 	private:
 
 		Metrics(std::string& mp) {
@@ -66,7 +67,7 @@ class Metrics {
 			// A function needs its name or symbol in it
 			// A function must have a value
 			// Eg. sin40, cos(90), log 2
-			if (!(value.find_first_not_of("0123456789.") == std::string::npos) &&
+			if (!(value.find_first_not_of("0123456789.-") == std::string::npos) &&
 				function == "NULLFn") {
 				return false;
 			}
@@ -126,16 +127,30 @@ class Metrics {
 			if (MathProb.isFunction()) {
 				MathProb.functionFinder();
 				MathProb.functionValueSplitter();
-				if (std::trunc(std::stod(MathProb.value)) == std::stod(MathProb.value))
-					n = MathProb.functions(std::find(funcs, funcs + 15, function) - funcs, stoi(MathProb.value));
-				else
-					n = MathProb.functions(std::find(funcs, funcs + 15, function) - funcs, stod(MathProb.value));
+				n = MathProb.functions(std::find(funcs, funcs + 15, function) - funcs, stod(MathProb.value));
 				Metrics::nVEC.push_back(n);
 			}
 			else {
 				Metrics::nVEC.push_back(stod(MathProb.mathsproblem))
 			}
 
+		}
+
+		void OPSsplitter() {
+			while ((start_pos = Metrics::mathsproblem.find('+', start_pos)) != std::string::npos ||
+				(start_pos = Metrics::mathsproblem.find('*', start_pos)) != std::string::npos ||
+				(start_pos = Metrics::mathsproblem.find('/', start_pos)) != std::string::npos ||
+				(start_pos = Metrics::mathsproblem.find('^', start_pos)) != std::string::npos || ) {
+				Metrics::opsVEC.push_back(Metrics::mathsproblem[start_pos]);
+			}
+
+		}
+
+		bool is_number()
+		{
+			char* end = nullptr;
+			double val = strtod(Metrics::mathsproblem.c_str(), &end);
+			return end != Metrics::mathsproblem.c_str() && *end == '\0' && val != HUGE_VAL;
 		}
 
 		void reduction() {
@@ -145,37 +160,60 @@ class Metrics {
 			mathsproblem.erase(end_pos, mathsproblem.end());
 		}
 
-		void parenModCalc() {
-			size_t end_pos, j;
-			while ((start_pos = mathsproblem.find("|", start_pos)) != std::string::npos &&
-				   (start_pos = mathsproblem.find(')')) != std::string::npos) {
-				if (mathsproblem[start_pos] == '|') {
-					end_pos = mathsproblem.find("|", start_pos + 1);
-					if (end_pos - start_pos > 2) {
-						Metrics::rearranger(mathsproblem.substr(start_pos + 2, end_pos - start_pos - 2));
-						std::vector<double> numarray = getNums(mathsproblem);
-						std::vector<char> oparray = getOPS(mathsproblem);
-						mathsproblem = mathsproblem.substr(0, start_pos) +
-							std::to_string(abs(numarray[0])) +
-							mathsproblem.substr(end_pos + 1, mathsproblem.length());
+		void modulus() {
+			while ((start_pos = Metrics::mathsproblem.find("|", start_pos)) != std::string::npos) {
+
+				end_pos = Metrics::mathsproblem.find("|", start_pos + 1);
+
+				if (end_pos - start_pos > 2) {
+					Metrics MathProb = Metrics::mathsproblem.substr(start_pos + 1, end_pos - start_pos - 1);
+					MathProb.reduction();
+					if (MathProb.isFunction()) {
+
+						MathProb.functionFinder();
+						MathProb.functionValueSplitter();
+						Metrics::mathsproblem = std::to_string(
+						MathProb.functions(std::find(funcs, funcs + 15, Metrics::function) - funcs, stod(MathProb.value))
+						);
+						return  
 					}
-					else {
-						mathsproblem.erase(mathsproblem.begin() + end_pos);
-						mathsproblem.erase(mathsproblem.begin() + start_pos);
-					}
+
+					MathProb.MIN2MINX();
+					MathProb.parenthesis();
+					MathProb.modulus();
+					MathProb.numSplitter();
+					MathProb.OPSsplitter();
+					MathProb.arithmetics();
+
+					mathsproblem = mathsproblem.substr(0, start_pos) +
+						std::to_string(abs(numarray[0])) +
+						mathsproblem.substr(end_pos + 1, mathsproblem.length());
 				}
 				else {
-					auto substr = mathsproblem.substr(0, start_pos);
-					std::reverse(substr.begin(), substr.end());
-					j = substr.find('(');
-					auto numarray = getNums(mathsproblem.substr(start_pos - j, j));
-					auto oparray = getOPS(mathsproblem.substr(start_pos - j, j));
-					arithmetics(numarray, oparray);
-					mathsproblem = mathsproblem.substr(0, start_pos - j - 1) + 
-								   std::to_string(numarray[0]) + 
-								   mathsproblem.substr(start_pos + 1, mathsproblem.length());
+					mathsproblem.erase(mathsproblem.begin() + end_pos);
+					mathsproblem.erase(mathsproblem.begin() + start_pos);
 				}
+			}
+		}
 
+		void parenthesis() {
+			size_t end_pos, j;
+			while ((start_pos = Metrics::mathsproblem.find(')')) != std::string::npos) {
+				std::string substr = Metrics::mathsproblem.substr(0, start_pos);
+				std::reverse(substr.begin(), substr.end());
+				j = substr.find('(');
+
+				Metrics MathProb = Metrics::mathsproblem.substr(start_pos - j, j);
+
+				// rearranger!
+
+				MathProb.numSplitter();
+				MathProb.OPSsplitter();
+				MathProb.arithmetics();
+
+				Metrics::mathsproblem = MathProb.mathsproblem.substr(0, start_pos - j - 1) +
+					std::to_string(numarray[0]) +
+					MathProb.mathsproblem.substr(start_pos + 1, MathProb.mathsproblem.length());
 			}
 		}
 
@@ -196,6 +234,7 @@ class Metrics {
 						if (start_pos >= 3) {
 							if ((std::find(expfuncs.begin(), expfuncs.end(), 
 								mathsproblem.substr(start_pos - 3, 5)) == expfuncs.end())) {
+
 								mathsproblem.replace(start_pos, 1, "+-1*");
 							}
 						}
@@ -216,7 +255,7 @@ class Metrics {
 			}
 		}
 
-		void rearranger() {
+		void arithmetics() {
 
 		}
 
@@ -227,17 +266,6 @@ unsigned int factorial(unsigned int n)
 	return ((n == 1 || n == 0) ? 1 : n * factorial(n - 1));
 }
 
-std::vector<char> getOPS(std::string Mprob) {
-	std::vector<char> x;
-	for (int i = 0; i < Mprob.length(); i++) {
-		if (Mprob[i] == '+' || Mprob[i] == '*' ||
-			Mprob[i] == '/' || Mprob[i] == '^') {
-			x.push_back(Mprob[i]);
-		}
-	}
-
-	return x;
-}
 
 int main() {
 	while (true)
