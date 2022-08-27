@@ -8,7 +8,6 @@
 class Metrics {
 public:
 	std::string mathsproblem;
-	std::string function = "NULLFn";
 	std::string value;
 	std::vector<double> nVEC;
 	std::vector<char> opsVEC;
@@ -19,14 +18,6 @@ public:
 
 	Metrics(std::string mp):
 		mathsproblem(mp){}
-
-	friend std::istream& operator >> (std::istream& in, Metrics& MathProb) {
-		std::string mp;
-		in >> mp;
-		MathProb.mathsproblem = mp;
-
-		return in;
-	}
 
 	bool operator== (const char* mp) {
 		return this->mathsproblem.c_str() == mp;
@@ -44,8 +35,14 @@ private:
 							"cosec", "antilog", "ln-1", "sin-1", "cos-1", "tan-1",
 		//					13      14
 							"!", "NULLFn" };
+	std::string function = "NULLFn";
 	int start_pos;
 	int NULLFn = 14;
+
+	unsigned int factorial(unsigned int n)
+	{
+		return ((n == 1 || n == 0) ? 1 : n * factorial(n - 1));
+	}
 
 public:
 
@@ -60,13 +57,15 @@ public:
 		}
 	}
 
-	void functionFinder() {
+	int functionFinder() {
 		int func = 14;
 		for (int i = 0; i < NULLFn; i++) {
 			if (mathsproblem.find(funcs[i]) != std::string::npos) func = i;
 
 		}
 		function = funcs[func];
+
+		return func;
 	}
 
 	void functionValueSplitter() {
@@ -309,32 +308,33 @@ public:
 
 };
 
-unsigned int factorial(unsigned int n)
-{
-	return ((n == 1 || n == 0) ? 1 : n * factorial(n - 1));
-}
-
 
 int main() {
 	while (true)
 	{
 		std::cout << "ENTER : ";
 		Metrics problem;
-		std::getline(std::cin, problem);
+		std::getline(std::cin, problem.mathsproblem);
 
-		problem = rearranger(problem);
-		if (!is_number(problem)) {
-			std::vector<double> numarray = getNums(problem);
-			std::vector<char> oparray = getOPS(problem);
+		problem.reduction();
+		if (problem.isFunction()) {  //// 45 + 45
+			problem.functionValueSplitter();
+			std::cout << "        "
+					  << problem.functions(problem.functionFinder(), stod(problem.value))
+					  << std::endl;
+			continue;
+		}
+		else if (!problem.is_number()) {
 
-			arithmetics(numarray, oparray);
-			for (double i : numarray) { std::cout << "        " << i << std::endl; }
+			problem.MIN2MINX();
+			problem.parenthesis();
+			problem.modulus();
+			problem.numSplitter();
+			problem.OPSsplitter();
+
+			std::cout << "        " << problem.arithmetics() << std::endl;
 		}
-		else if (problem == "Exit")
-		{
-			return 0;
-		}
-		else std::cout << "        " << problem << std::endl;
+		else if (problem == "Exit") return 0;
+		else std::cout << "        " << problem.mathsproblem << std::endl;
 	}
 }
-
