@@ -338,8 +338,3 @@ int main() {
 	}
 }
 
-std::ostream& operator<<(std::ostream& out, const Metrics& MathProb)
-{
-	// TODO: insert return statement here
-}
-
