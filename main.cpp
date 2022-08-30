@@ -89,8 +89,8 @@ public:
 		// A function needs its name or symbol in it
 		// A function must have a value
 		// Eg. sin40, cos(90), log 2
-		if (!(value.find_first_not_of("0123456789.-") == std::string::npos) &&
-			function == "NULLFn") {
+		if (!(value.find_first_not_of("0123456789.-") == std::string::npos) ||
+			function == "NULLFn" || value == "") {
 			return false;
 		}
 		return true;
@@ -121,11 +121,18 @@ public:
 
 	void numSplitter() {
 		double n;
+		start_pos = 0;
 		Metrics MathProb = mathsproblem;
 		while (MathProb.containOperator()) {
-			while ((start_pos = MathProb.mathsproblem.find('+', start_pos)) != std::string::npos ||
-				(start_pos = MathProb.mathsproblem.find('*', start_pos)) != std::string::npos ||
-				(start_pos = MathProb.mathsproblem.find('/', start_pos)) != std::string::npos ||
+			std::cout << (start_pos = MathProb.mathsproblem.find('+', start_pos)) << std::endl <<
+				(start_pos = MathProb.mathsproblem.find('*', start_pos)) << std::endl <<
+				(start_pos = MathProb.mathsproblem.find('/', start_pos)) << std::endl <<
+				(start_pos = MathProb.mathsproblem.find('^', start_pos)) << std::endl;
+
+
+			while ((start_pos = MathProb.mathsproblem.find('+', start_pos)) != std::string::npos &&
+				(start_pos = MathProb.mathsproblem.find('*', start_pos)) != std::string::npos &&
+				(start_pos = MathProb.mathsproblem.find('/', start_pos)) != std::string::npos &&
 				(start_pos = MathProb.mathsproblem.find('^', start_pos)) != std::string::npos) {
 				Metrics MATHSPROBLEM = MathProb.mathsproblem.substr(0, start_pos);
 				if (MATHSPROBLEM.isFunction()) {
@@ -317,7 +324,7 @@ int main() {
 		std::getline(std::cin, problem.mathsproblem);
 
 		problem.reduction();
-		if (problem.isFunction()) {  //// 45 + 45
+		if (problem.isFunction()) { 
 			problem.functionValueSplitter();
 			std::cout << "        "
 					  << problem.functions(problem.functionFinder(), stod(problem.value))
