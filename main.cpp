@@ -49,11 +49,11 @@ public:
 	bool containOperator(const char& SOP = 'a') {
 		if (SOP == 'a') {
 			for (char i : {'+', '-', '*', '/', '^'}) {
-				return mathsproblem.find(i) != std::string::npos;
+				return (mathsproblem.find(i) != std::string::npos);
 			}
 		}
 		else {
-			return mathsproblem.find(SOP) != std::string::npos;
+			return (mathsproblem.find(SOP) != std::string::npos);
 		}
 	}
 
@@ -139,7 +139,7 @@ public:
 					else {
 						n = stod(MathProb.mathsproblem.substr(0, start_pos));
 					}
-					mathsproblem = MathProb.mathsproblem.substr(start_pos + 1);
+					MathProb.mathsproblem = MathProb.mathsproblem.substr(start_pos + 1);
 
 				}
 			}
@@ -166,6 +166,7 @@ public:
 			(start_pos = Metrics::mathsproblem.find('/', start_pos)) != std::string::npos ||
 			(start_pos = Metrics::mathsproblem.find('^', start_pos)) != std::string::npos) {
 			Metrics::opsVEC.push_back(Metrics::mathsproblem[start_pos]);
+			start_pos++;
 		}
 
 	}
