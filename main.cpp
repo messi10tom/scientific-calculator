@@ -16,8 +16,8 @@ public:
 
 	}
 
-	Metrics(std::string mp):
-		mathsproblem(mp){}
+	Metrics(std::string mp) :
+		mathsproblem(mp) {}
 
 	bool operator== (const char* mp) {
 		return this->mathsproblem.c_str() == mp;
@@ -36,7 +36,7 @@ private:
 		//					13      14
 							"!", "NULLFn" };
 	std::string function = "NULLFn";
-	int start_pos;
+	int start_pos = 0;
 	int NULLFn = 14;
 
 	unsigned int factorial(unsigned int n)
@@ -124,31 +124,26 @@ public:
 		start_pos = 0;
 		Metrics MathProb = mathsproblem;
 		while (MathProb.containOperator()) {
-			std::cout << (start_pos = MathProb.mathsproblem.find('+', start_pos)) << std::endl <<
-				(start_pos = MathProb.mathsproblem.find('*', start_pos)) << std::endl <<
-				(start_pos = MathProb.mathsproblem.find('/', start_pos)) << std::endl <<
-				(start_pos = MathProb.mathsproblem.find('^', start_pos)) << std::endl;
 
-
-			while ((start_pos = MathProb.mathsproblem.find('+', start_pos)) != std::string::npos &&
-				(start_pos = MathProb.mathsproblem.find('*', start_pos)) != std::string::npos &&
-				(start_pos = MathProb.mathsproblem.find('/', start_pos)) != std::string::npos &&
-				(start_pos = MathProb.mathsproblem.find('^', start_pos)) != std::string::npos) {
-				Metrics MATHSPROBLEM = MathProb.mathsproblem.substr(0, start_pos);
-				if (MATHSPROBLEM.isFunction()) {
-					MATHSPROBLEM.functionFinder();
-					MATHSPROBLEM.functionValueSplitter();
-					if (std::trunc(std::stod(MATHSPROBLEM.value)) == std::stod(MATHSPROBLEM.value))
-						n = MATHSPROBLEM.functions(std::find(funcs, funcs + 15, function) - funcs, stoi(MATHSPROBLEM.value));
-					else
+			for (; start_pos < MathProb.mathsproblem.length(); start_pos++) {
+				if (MathProb.mathsproblem[start_pos] == '+' ||
+					MathProb.mathsproblem[start_pos] == '*' ||
+					MathProb.mathsproblem[start_pos] == '/' ||
+					MathProb.mathsproblem[start_pos] == '^') {
+					Metrics MATHSPROBLEM = MathProb.mathsproblem.substr(0, start_pos);
+					if (MATHSPROBLEM.isFunction()) {
+						MATHSPROBLEM.functionFinder();
+						MATHSPROBLEM.functionValueSplitter();
 						n = MATHSPROBLEM.functions(std::find(funcs, funcs + 15, function) - funcs, stod(MATHSPROBLEM.value));
-				}
-				else {
-					n = stod(MathProb.mathsproblem.substr(0, start_pos));
-				}
-				mathsproblem = MathProb.mathsproblem.substr(start_pos + 1);
+					}
+					else {
+						n = stod(MathProb.mathsproblem.substr(0, start_pos));
+					}
+					mathsproblem = MathProb.mathsproblem.substr(start_pos + 1);
 
+				}
 			}
+
 			Metrics::nVEC.push_back(n);
 
 		}
@@ -324,11 +319,11 @@ int main() {
 		std::getline(std::cin, problem.mathsproblem);
 
 		problem.reduction();
-		if (problem.isFunction()) { 
+		if (problem.isFunction()) {
 			problem.functionValueSplitter();
 			std::cout << "        "
-					  << problem.functions(problem.functionFinder(), stod(problem.value))
-					  << std::endl;
+				<< problem.functions(problem.functionFinder(), stod(problem.value))
+				<< std::endl;
 			continue;
 		}
 		else if (!problem.is_number()) {
