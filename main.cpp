@@ -161,12 +161,14 @@ public:
 	}
 
 	void OPSsplitter() {
-		while ((start_pos = Metrics::mathsproblem.find('+', start_pos)) != std::string::npos ||
-			(start_pos = Metrics::mathsproblem.find('*', start_pos)) != std::string::npos ||
-			(start_pos = Metrics::mathsproblem.find('/', start_pos)) != std::string::npos ||
-			(start_pos = Metrics::mathsproblem.find('^', start_pos)) != std::string::npos) {
-			Metrics::opsVEC.push_back(Metrics::mathsproblem[start_pos]);
-			start_pos++;
+		start_pos = 0;
+		for (; start_pos < Metrics::mathsproblem.length(); start_pos++) {
+			if (Metrics::mathsproblem[start_pos] == '+' ||
+				Metrics::mathsproblem[start_pos] == '*' ||
+				Metrics::mathsproblem[start_pos] == '/' ||
+				Metrics::mathsproblem[start_pos] == '^') {
+				Metrics::opsVEC.push_back(Metrics::mathsproblem[start_pos]);
+			}
 		}
 
 	}
